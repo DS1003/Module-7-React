@@ -119,7 +119,7 @@ const NavBar = () => {
               <div className="absolute -top-1 -right-1 w-3 h-3 bg-indigo-400 rounded-full animate-pulse" />
             </div>
             <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 via-indigo-400 to-cyan-400 bg-clip-text text-transparent">
-              KustomisOps
+              KustomOps
             </div>
           </div>
 
@@ -267,7 +267,7 @@ const ScrollingRow = ({ items, direction = 'left', speed = 'normal' }) => {
 const AnimatedTestimonials = () => {
   const testimonials1 = [
     {
-      quote: "KustomisOps a révolutionné notre façon de gérer les microservices. Le gain de temps est incroyable.",
+      quote: "KustomOps a révolutionné notre façon de gérer les microservices. Le gain de temps est incroyable.",
       author: "Marie L.",
       role: "DevOps Lead",
       company: "TechCorp"
@@ -330,7 +330,7 @@ const AnimatedTestimonials = () => {
             </span>
           </h2>
           <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            Découvrez pourquoi les équipes DevOps choisissent KustomisOps
+            Découvrez pourquoi les équipes DevOps choisissent KustomOps
           </p>
         </div>
         
@@ -471,7 +471,7 @@ const LandingPage = () => {
           <div className="space-y-3">
             <div className="flex items-center gap-3">
               <span className="text-cyan-400">$</span>
-              <span className="text-gray-300">npx create-kustomisops-app mon-projet</span>
+              <span className="text-gray-300">npx create-kustomops-app `mon-projet`</span>
             </div>
             <div className="flex items-center gap-3 text-gray-400">
               <Check className="w-4 h-4 text-green-400" />
@@ -601,7 +601,7 @@ const LandingPage = () => {
             </span>
           </h2>
           <p className="text-xl text-gray-400 mb-12 max-w-2xl mx-auto">
-            Rejoignez les équipes qui font confiance à KustomisOps pour
+            Rejoignez les équipes qui font confiance à KustomOps pour
             leurs infrastructures DevOps nouvelle génération.
           </p>
           <div className="flex items-center justify-center gap-6">
@@ -666,7 +666,7 @@ const LandingPage = () => {
               <div className="flex items-center gap-3 mb-6">
                 <Settings className="w-8 h-8 text-cyan-400" />
                 <div className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-indigo-400 bg-clip-text text-transparent">
-                  KustomisOps
+                  KustomOps
                 </div>
               </div>
               <p className="text-gray-400">
@@ -702,7 +702,7 @@ const LandingPage = () => {
             ))}
           </div>
           <div className="pt-8 border-t border-white/10 flex justify-between items-center text-gray-400 text-sm">
-            <div>© 2025 KustomisOps. Tous droits réservés.</div>
+            <div>© 2025 KustomOps. Tous droits réservés.</div>
             <div className="flex gap-6">
               <button className="hover:text-cyan-400 transition-colors">
                 Mentions légales
