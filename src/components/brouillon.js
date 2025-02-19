@@ -1,0 +1,449 @@
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import withAuth from '../hoc/withAuth';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter
+} from "./ui/Dialog";
+import { Input } from "./ui/Input";
+import { Button } from "./ui/Button";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "./ui/Select";
+import { Table, TableCellComponent as TableCell, TableHeadComponent as TableHead, TableHeaderComponent as TableHeader, TableBodyComponent as TableBody, TableRowComponent as TableRow } from './ui/Table';
+import {
+    LayoutDashboard,
+    ClipboardList,
+    Users,
+    Building2,
+    GraduationCap,
+    LogOut,
+    Building,
+    Menu,
+    X,
+    BellRing,
+    Settings,
+    Search,
+    Plus,
+    MoreHorizontal,
+    ChevronDown
+} from 'lucide-react';
+import logo from '../assets/logo.jpg';
+
+const ProfileDropdown = () => {
+    const [isOpen, setIsOpen] = useState(false);
+    const navigate = useNavigate();
+
+    const handleLogout = useCallback(() => {
+        localStorage.removeItem('isAuthenticated');
+        navigate('/login');
+    }, [navigate]);
+
+    return (
+        <div className="relative profile-dropdown">
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="flex items-center space-x-3 group px-3 py-2 rounded-full bg-white/50 backdrop-blur-sm border border-gray-100 hover:bg-white/80 transition-all duration-200"
+            >
+                <div className="relative w-8 h-8">
+                    <img
+                        src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/LOGO_SONATEL_HD_FB.JPG/1200px-LOGO_SONATEL_HD_FB.JPG"
+                        alt="Sonatel logo"
+                        className="w-full h-full rounded-full object-cover"
+                    />
+                    <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-white" />
+                </div>
+                <span className="text-sm font-medium text-gray-700">Sonatel</span>
+                <ChevronDown className="w-4 h-4 text-gray-400" />
+            </button>
+
+            {isOpen && (
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-lg py-2 z-50 border border-gray-100">
+                    <div className="px-4 py-3 border-b border-gray-100">
+                        <p className="text-sm font-medium text-gray-900">Sonatel</p>
+                        <p className="text-xs text-gray-500">sonatel@impact-rse.org</p>
+                    </div>
+                    <div className="py-1">
+                        <button
+                            onClick={() => navigate('/profile')}
+                            className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left flex items-center space-x-2 group"
+                        >
+                            <Settings className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />
+                            <span>Profile Settings</span>
+                        </button>
+                        <button
+                            onClick={() => navigate('/notifications')}
+                            className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 w-full text-left flex items-center space-x-2 group"
+                        >
+                            <BellRing className="w-4 h-4 text-gray-400 group-hover:text-gray-600" />
+                            <span>Notifications</span>
+                        </button>
+                        <button
+                            onClick={handleLogout}
+                            className="px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full text-left flex items-center space-x-2 group"
+                        >
+                            <LogOut className="w-4 h-4 text-red-400 group-hover:text-red-600" />
+                            <span>Déconnexion</span>
+                        </button>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+};
+
+const SidebarLink = ({ icon: Icon, text, active, path, isCollapsed }) => {
+    const navigate = useNavigate();
+
+    return (
+        <div
+            onClick={() => navigate(path)}
+            className="transform transition-all duration-200"
+        >
+            <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'} px-4 py-3 rounded-xl cursor-pointer transition-all duration-200 
+                ${active
+                    ? 'text-blue-600 bg-blue-50/50 font-medium'
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-blue-600'
+                }`}
+            >
+                <Icon size={20} className="transition-transform duration-300" />
+                {!isCollapsed && <span className="text-sm">{text}</span>}
+            </div>
+        </div>
+    );
+};
+
+const Profile = () => {
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+    const [currentPath, setCurrentPath] = useState('/profile');
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [projectsPerPage, setProjectsPerPage] = useState(5);
+
+    const navigationItems = useMemo(() => [
+        { icon: LayoutDashboard, text: "Tableau de bord", path: "/dashboard" },
+        { icon: ClipboardList, text: "Journal d'activités", path: "/activities" },
+        { icon: Users, text: "ONG", path: "/ong" },
+        { icon: Building2, text: "Entreprise", path: "/enterprise" },
+        { icon: Building, text: "Mairie", path: "/city-hall" },
+        { icon: GraduationCap, text: "Milieu académique", path: "/academic" }
+    ], []);
+
+    const [projects, setProjects] = useState([
+        {
+            id: 1,
+            name: "HELICOPTERE",
+            sector: "Santé",
+            launchDate: "-",
+            region: "Sénégal",
+            phase: "En cours",
+            currentBudget: "non enregistrée",
+            remainingBudget: "non enregistrée"
+        },
+        {
+            id: 2,
+            name: "DESC",
+            sector: "Education",
+            launchDate: "-",
+            region: "Matam, Sénégal",
+            phase: "Lancé",
+            currentBudget: "non enregistrée",
+            remainingBudget: "non enregistrée"
+        },
+        // ... autres projets comme dans votre capture d'écran
+    ]);
+
+    // Filtre des projets
+    const filteredProjects = projects.filter(project =>
+        project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        project.sector.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        project.region.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    // Pagination
+    const indexOfLastProject = currentPage * projectsPerPage;
+    const indexOfFirstProject = indexOfLastProject - projectsPerPage;
+    const currentProjects = filteredProjects.slice(indexOfFirstProject, indexOfLastProject);
+    const totalPages = Math.ceil(filteredProjects.length / projectsPerPage);
+
+    const [newProject, setNewProject] = useState({
+        name: '',
+        sector: '',
+        region: '',
+        phase: ''
+    });
+
+    const handleAddProject = () => {
+        setProjects([...projects, { ...newProject, id: projects.length + 1 }]);
+        setIsModalOpen(false);
+        setNewProject({ name: '', sector: '', region: '', phase: '' });
+    };
+
+    return (
+        <div className="flex min-h-screen bg-gray-50">
+            {/* Sidebar */}
+            <div className={`fixed md:relative ${isSidebarCollapsed ? 'w-20' : 'w-64'} bg-white shadow-sm h-screen transition-all duration-300 z-30`}>
+                <div className="px-4 py-6 h-full">
+                    <div className={`mb-8 flex items-center ${isSidebarCollapsed ? 'justify-center' : 'space-x-3'}`}>
+                        <img src={logo} alt="RSE SENEGAL" className="h-12" />
+                        {!isSidebarCollapsed && (
+                            <span className="text-xl font-bold text-gray-900">
+                                RSE
+                            </span>
+                        )}
+                    </div>
+
+                    <nav className="space-y-1">
+                        {navigationItems.map((item) => (
+                            <SidebarLink
+                                key={item.path}
+                                {...item}
+                                active={currentPath === item.path}
+                                isCollapsed={isSidebarCollapsed}
+                            />
+                        ))}
+                    </nav>
+                </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="flex-1 min-h-screen">
+                {/* Header */}
+                <header className="sticky top-0 bg-white shadow-sm z-20">
+                    <div className="flex justify-between items-center px-6 py-4">
+                        <button
+                            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                            className="text-gray-600 hover:text-blue-600 transition-colors p-2 rounded-lg hover:bg-gray-50"
+                        >
+                            {isSidebarCollapsed ? <Menu size={20} /> : <X size={20} />}
+                        </button>
+                        <ProfileDropdown />
+                    </div>
+                </header>
+
+                {/* Main Content */}
+                <main className="p-6">
+                    <div className="max-w-7xl mx-auto space-y-6">
+                        {/* Header */}
+                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                            <h1 className="text-2xl font-semibold text-gray-900">Projets Sonatel</h1>
+                            <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
+                                <div className="relative w-full md:w-auto">
+                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                                    <Input
+                                        type="text"
+                                        placeholder="Rechercher un projet..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="pl-10 w-full md:w-64 bg-white"
+                                    />
+                                </div>
+                                <Button
+                                    onClick={() => setIsModalOpen(true)}
+                                    className="w-full md:w-auto bg-blue-600 hover:bg-blue-700"
+                                >
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    Nouveau projet
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Projects Table */}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+                            {/* Table component remains the same but with updated styling */}
+                            {/* En-tête du tableau */}
+                            <div className="flex justify-between items-center">
+                                <h1 className="text-2xl font-bold text-gray-800">Sonatel</h1>
+                                <div className="flex items-center space-x-4">
+                                    <div className="relative">
+                                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                                        <Input
+                                            type="text"
+                                            placeholder="Rechercher..."
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                            className="pl-10 w-64"
+                                        />
+                                    </div>
+                                    <Button
+                                        onClick={() => setIsModalOpen(true)}
+                                        className="bg-blue-600 hover:bg-blue-700"
+                                    >
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        Ajouter un nouveau projet
+                                    </Button>
+                                </div>
+                            </div>
+
+                            {/* Tableau */}
+                            <div className="bg-white rounded-lg shadow">
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead>Nom du projet</TableHead>
+                                            <TableHead>Secteur</TableHead>
+                                            <TableHead>Date lancement</TableHead>
+                                            <TableHead>Pays/Région</TableHead>
+                                            <TableHead>Phase projet</TableHead>
+                                            <TableHead>Budget actuel</TableHead>
+                                            <TableHead>Budget restant</TableHead>
+                                            <TableHead>Actions</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {currentProjects.map((project) => (
+                                            <TableRow key={project.id}>
+                                                <TableCell className="font-medium">{project.name}</TableCell>
+                                                <TableCell>{project.sector}</TableCell>
+                                                <TableCell>{project.launchDate}</TableCell>
+                                                <TableCell>{project.region}</TableCell>
+                                                <TableCell>
+                                                    <span className={`px-2 py-1 rounded-full text-xs font-medium
+                                                                                ${project.phase === 'En cours' ? 'bg-orange-100 text-orange-600' :
+                                                            project.phase === 'Terminé' ? 'bg-green-100 text-green-600' :
+                                                                'bg-blue-100 text-blue-600'}`}>
+                                                        {project.phase}
+                                                    </span>
+                                                </TableCell>
+                                                <TableCell>{project.currentBudget}</TableCell>
+                                                <TableCell>{project.remainingBudget}</TableCell>
+                                                <TableCell>
+                                                    <Button variant="ghost" size="icon">
+                                                        <MoreHorizontal className="h-4 w-4" />
+                                                    </Button>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </TableBody>
+                                </Table>
+
+                                {/* Pagination */}
+                                <div className="flex items-center justify-between px-4 py-3 border-t">
+                                    <div className="flex items-center space-x-2">
+                                        <span className="text-sm text-gray-500">Afficher</span>
+                                        <Select
+                                            value={projectsPerPage.toString()}
+                                            onValueChange={(value) => setProjectsPerPage(Number(value))}
+                                        >
+                                            <SelectTrigger className="w-16">
+                                                <SelectValue>{projectsPerPage}</SelectValue>
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value="5">5</SelectItem>
+                                                <SelectItem value="10">10</SelectItem>
+                                                <SelectItem value="20">20</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                        <span className="text-sm text-gray-500">projets par page</span>
+                                    </div>
+
+                                    <div className="flex items-center space-x-2">
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                            disabled={currentPage === 1}
+                                        >
+                                            Précédent
+                                        </Button>
+                                        {Array.from({ length: totalPages }, (_, i) => (
+                                            <Button
+                                                key={i + 1}
+                                                variant={currentPage === i + 1 ? "default" : "outline"}
+                                                onClick={() => setCurrentPage(i + 1)}
+                                            >
+                                                {i + 1}
+                                            </Button>
+                                        ))}
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                            disabled={currentPage === totalPages}
+                                        >
+                                            Suivant
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+
+            {/* Modal d'ajout de projet */}
+            <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Ajouter un nouveau projet</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium">Nom du projet</label>
+                            <Input
+                                value={newProject.name}
+                                onChange={(e) => setNewProject({ ...newProject, name: e.target.value })}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium">Secteur</label>
+                            <Select
+                                value={newProject.sector}
+                                onValueChange={(value) => setNewProject({ ...newProject, sector: value })}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Sélectionner un secteur" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="Santé">Santé</SelectItem>
+                                    <SelectItem value="Education">Education</SelectItem>
+                                    <SelectItem value="Agriculture">Agriculture</SelectItem>
+                                    <SelectItem value="Environnement">Environnement</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium">Région</label>
+                            <Input
+                                value={newProject.region}
+                                onChange={(e) => setNewProject({ ...newProject, region: e.target.value })}
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium">Phase</label>
+                            <Select
+                                value={newProject.phase}
+                                onValueChange={(value) => setNewProject({ ...newProject, phase: value })}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Sélectionner une phase" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="En cours">En cours</SelectItem>
+                                    <SelectItem value="Lancé">Lancé</SelectItem>
+                                    <SelectItem value="Terminé">Terminé</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+                            Annuler
+                        </Button>
+                        <Button onClick={handleAddProject}>
+                            Ajouter le projet
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </div>
+    );
+};
+
+export default withAuth(Profile);
